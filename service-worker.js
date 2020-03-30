@@ -17,33 +17,41 @@ self.addEventListener("push", function (event) {
 
 self.addEventListener("pushsubscriptionchange",(event) => {
   console.log("pushsubscriptionchange")
-    event.waitUntil(swRegistration.pushManager.subscribe(event.oldSubscription.options).then((subscription) => {
-          localforage.getItem("user_data").then(function (data) {
-              console.log(data);
-              let id;
-               if(data===null){
-                id=0
-               }else{
-                id=data.id
-               }
-              fetch("/register", {
-                method: "post",
-                headers: {
-                  "Content-type": "application/json",
-                },
-                body: JSON.stringify({
-                  subscription: subscription,
-                  id: id,
-                }),
-              }).then((res) => res.json()).then((data) => {
-                  localforage.setItem("user_data", data).catch(function (err) {
-                  console.log(err);
-                  });
-                });
-            }).catch(function (err) {
-              console.log(err);
-            });
-        })
+    event.waitUntil(self.registration.pushManager.subscribe({
+      userVisibleOnly: true
+    }).then((subscription) => {
+      console.log(5)
+          // localforage.getItem("user_data").then(function (data) {
+          //     console.log("FROM LOCAL") 
+          //     console.log(data);
+          //     console.log("-----------") 
+          //     let id;
+          //      if(data===null){
+          //       id=0
+          //      }else{
+          //       id=data.id
+          //      }
+          //     fetch("/register", {
+          //       method: "post",
+          //       headers: {
+          //         "Content-type": "application/json",
+          //       },
+          //       body: JSON.stringify({
+          //         subscription: subscription,
+          //         id: id,
+          //       }),
+          //     }).then((res) => res.json()).then((data) => {
+          //         console.log("FROM SERVER") 
+          //         console.log(data)
+          //         console.log("-----------") 
+          //         localforage.setItem("user_data", data).catch(function (err) {
+          //         console.log(err);
+          //         });
+          //       });
+          //   }).catch(function (err) {
+          //     console.log(err);
+          //   });
+        }).catch(function (err) {console.log(err)}) 
     );
   },
   false

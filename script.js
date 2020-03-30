@@ -31,8 +31,7 @@ function get_permission() {
           const vapidPublicKey = await response.text();
           // Chrome doesn't accept the base64-encoded (string) vapidPublicKey yet
           // urlBase64ToUint8Array() is defined in /tools.js
-          const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
-
+          const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey); 
           // Otherwise, subscribe the user (userVisibleOnly allows to specify that we don't plan to
           // send notifications that don't have a visible effect for the user).
           return registration.pushManager.subscribe({
