@@ -5,8 +5,8 @@ if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
 }
 
 function urlBase64ToUint8Array(base64String) {
-  var padding = '='.repeat((4 - base64String.length % 4) % 4);
-  var base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  var padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  var base64 = (base64String + padding).replace(/\-/g, "+").replace(/_/g, "/");
   var rawData = window.atob(base64);
   var outputArray = new Uint8Array(rawData.length);
   for (var i = 0; i < rawData.length; ++i) {
@@ -15,8 +15,9 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
-function get_permission(){
-  navigator.serviceWorker.ready.then(function (registration) {
+function get_permission() {
+  navigator.serviceWorker.ready
+    .then(function (registration) {
       // Use the PushManager to get the user's subscription to the push service.
       return registration.pushManager
         .getSubscription()
@@ -41,15 +42,36 @@ function get_permission(){
         });
     })
     .then(function (subscription) {
-      // Send the subscription details to the server using the Fetch API.
-      fetch("./register", {
-        method: "post",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          subscription: subscription,
-        }),
-      });
+      localforage.getItem("user_data").then(function (data) {
+          console.log("FROM LOCAL") 
+          console.log(data);
+          console.log("-----------") 
+          let id;
+          if(data===null){
+           id=0
+          }else{
+          	id=data.id
+          }
+          fetch("/register", {
+            method: "post",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+              subscription: subscription,
+              id: id
+            }),
+          }).then((res) => res.json()).then((data) => {
+          	  console.log("FROM SERVER") 
+              console.log(data)
+              console.log("-----------") 
+              localforage.setItem("user_data", data).catch(function (err) {
+              console.log(err);
+              });
+            });
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
     });
 }
