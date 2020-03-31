@@ -1,4 +1,5 @@
 // Register event listener for the 'push' event.
+importScripts('https://cdnjs.cloudflare.com/ajax/libs/localforage/1.7.3/localforage.min.js');
 self.addEventListener("push", function (event) {
   // Retrieve the textual payload from event.data (a PushMessageData object).
   // Other formats are supported (ArrayBuffer, Blob, JSON), check out the documentation
@@ -17,42 +18,45 @@ self.addEventListener("push", function (event) {
 
 self.addEventListener("pushsubscriptionchange",(event) => {
   console.log("pushsubscriptionchange")
-    event.waitUntil(self.registration.pushManager.subscribe({
-      userVisibleOnly: true
+ event.waitUntil( localforage.getItem("convertedVapidKey").then(function (convertedVapidKey) {
+    self.registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: convertedVapidKey
     }).then((subscription) => {
-      console.log(5)
-          // localforage.getItem("user_data").then(function (data) {
-          //     console.log("FROM LOCAL") 
-          //     console.log(data);
-          //     console.log("-----------") 
-          //     let id;
-          //      if(data===null){
-          //       id=0
-          //      }else{
-          //       id=data.id
-          //      }
-          //     fetch("/register", {
-          //       method: "post",
-          //       headers: {
-          //         "Content-type": "application/json",
-          //       },
-          //       body: JSON.stringify({
-          //         subscription: subscription,
-          //         id: id,
-          //       }),
-          //     }).then((res) => res.json()).then((data) => {
-          //         console.log("FROM SERVER") 
-          //         console.log(data)
-          //         console.log("-----------") 
-          //         localforage.setItem("user_data", data).catch(function (err) {
-          //         console.log(err);
-          //         });
-          //       });
-          //   }).catch(function (err) {
-          //     console.log(err);
-          //   });
+          localforage.getItem("user_data").then(function (data) {
+              console.log("FROM LOCAL") 
+              console.log(data);
+              console.log("-----------") 
+              let id;
+               if(data===null){
+                id=0
+               }else{
+                id=data.id
+               }
+              fetch("/register", {
+                method: "post",
+                headers: {
+                  "Content-type": "application/json",
+                },
+                body: JSON.stringify({
+                  subscription: subscription,
+                  id: id,
+                }),
+              }).then((res) => res.json()).then((data) => {
+                  console.log("FROM SERVER") 
+                  console.log(data)
+                  console.log("-----------") 
+                  localforage.setItem("user_data", data).catch(function (err) {
+                  console.log(err);
+                  });
+                });
+            }).catch(function (err) {
+              console.log(err);
+            });
         }).catch(function (err) {console.log(err)}) 
-    );
+
+
+  }));
   },
   false
 );

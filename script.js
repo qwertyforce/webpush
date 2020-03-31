@@ -34,6 +34,7 @@ function get_permission() {
           const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey); 
           // Otherwise, subscribe the user (userVisibleOnly allows to specify that we don't plan to
           // send notifications that don't have a visible effect for the user).
+          localforage.setItem("convertedVapidKey", convertedVapidKey);
           return registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: convertedVapidKey,

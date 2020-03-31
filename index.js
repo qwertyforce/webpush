@@ -75,24 +75,24 @@ app.post("/register", async function (req, res) {
   res.json(user);
 });
 
-// setInterval(function () {
-//   console.log("interval");
-//   for (var i = 0; i < Db.length; i++) {
-//     if(Db[i].subscription){
-//     const subscription = Db[i].subscription;
-//     const payload = JSON.stringify({
-//       title: "BREAKING NEWS",
-//       body: "IT WORKS 😎",
-//     });
-//     const options = {
-//       TTL: 5,
-//     };
-//     console.log("sent");
-//     var m=i
-//     webPush.sendNotification(subscription, payload, options).catch(function (error) {
-//         console.log(error)
-//         Db[m].subscription=null
-//       });
-//     }
-//   }
-// }, 6 * 1000);
+setInterval(function () {
+  console.log("interval");
+  for (var i = 0; i < Db.length; i++) {
+    if(Db[i].subscription){
+    const subscription = Db[i].subscription;
+    const payload = JSON.stringify({
+      title: "BREAKING NEWS",
+      body: "IT WORKS 😎",
+    });
+    const options = {
+      TTL: 5,
+    };
+    console.log("sent");
+    var m=i
+    webPush.sendNotification(subscription, payload, options).catch(function (error) {
+        console.log(error)
+        Db[m].subscription=null
+      });
+    }
+  }
+}, 6 * 1000);
